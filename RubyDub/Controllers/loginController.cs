@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json.Linq;
 using RubyDub.Models;
+using RubyDub.DAL;
 using RubyDub.Util;
 
 namespace RubyDub.Controllers
@@ -17,7 +18,7 @@ namespace RubyDub.Controllers
         [HttpPost]
         public ActionResult Post([FromForm]string PhoneNumber, [FromForm]string Password)
         {
-
+            UserAuthDAL.Test();
             if (PhoneNumber == Password)
             {
                 string authtoken = StringGenerator.GenerateRandomString(50);

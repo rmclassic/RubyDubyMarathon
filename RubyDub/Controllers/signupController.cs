@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Cassandra;
+using RubyDub.DAL;
+using RubyDub.Models;
 
 namespace RubyDub.Controllers
 {
@@ -10,11 +13,22 @@ namespace RubyDub.Controllers
     [ApiController]
     public class signupController : ControllerBase
     {
-       
+
         [HttpPost]
-        public IActionResult  sPost([FromForm]string PhoneNumber, [FromForm]string Password, [FromForm]string Name)
+        public StatusCodeResult Post([FromForm]string username, [FromForm]string phonenumber, [FromForm]string email, [FromForm]string password)
         {
-            //TODO AFTER DATABASE IMPLEMENTATION
+            UserAuthDAL.Test();
+            var user = new User(username, phonenumber, email, password, "", "", "");
+            
+            if (!UserAuthDAL.IsPhoneNumberAvailable(phonenumber))
+            {
+                return Unauthorized();
+            }
+            else
+            {
+                UserAuthDAL.SendUserVerificationCode(user);
+            }
+            return Ok();
         }
     }
 }
