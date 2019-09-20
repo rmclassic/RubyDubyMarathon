@@ -12,8 +12,10 @@ namespace RubyDub.Controllers
     public class GetCustomerServiceController : Controller
     {
         [HttpGet]
-        public IActionResult Get(string id)
+        public IActionResult Get(string id, string phonenumber, string token)
         {
+            if (!UserAuthDAL.VerifyToken(phonenumber, token))
+                return Unauthorized();
             CustomerServicesDAL.AddService(new CustomerService("Dwa", "dwa", "12", "dwa", "12", 0, 6, 6));
             return Ok(CustomerServicesDAL.GetService(id));
         }

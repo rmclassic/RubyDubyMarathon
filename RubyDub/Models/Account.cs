@@ -23,7 +23,10 @@ namespace RubyDub.Models
             year = _year;
             phonenumber = _phonenumber;
         }
+        public Account()
+        {
 
+        }
         public Account(Row _row)
         {
             cardnumber = _row["cardnumber"] as string;

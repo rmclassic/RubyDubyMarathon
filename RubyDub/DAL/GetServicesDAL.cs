@@ -12,11 +12,12 @@ namespace RubyDub.DAL
         public static GetService GetService(string _id)
         {
             string req = "SELECT * FROM GetService WHERE id=\'" + _id + "\'";
+            req = "SELECT * FROM GetService";
             Cluster cluster = Cluster.Builder().AddContactPoint(Constants.DatabaseAddress).Build();
             var session = cluster.Connect(Constants.DatabaseKeySpace);
             var result = session.Execute(req);
 
-            return new GetService(result.First());
+            return new GetService(result.ElementAt(0));
 
         }
 

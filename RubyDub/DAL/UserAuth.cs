@@ -35,6 +35,27 @@ namespace RubyDub.DAL
             return true;
         }
 
+        public static bool Login(string phonenumber, string password)
+        {
+            Cluster cluster = Cluster.Builder().AddContactPoint(Constants.DatabaseAddress).Build();
+            var session = cluster.Connect(Constants.DatabaseKeySpace);
+            var result = session.Execute("select * from Customer where phonenumber =\'" + phonenumber + "\' AND password = \'" + password + '\'');
+
+            if (result.Count() > 0)
+                return true;
+            return false;
+        }
+
+        public static bool VerifyToken(string phonenumber, string token)
+        {
+            Cluster cluster = Cluster.Builder().AddContactPoint(Constants.DatabaseAddress).Build();
+            var session = cluster.Connect(Constants.DatabaseKeySpace);
+            var result = session.Execute("select * from Customer where phonenumber =\'" + phonenumber + "\' AND token = \'" + token + "\'");
+            if (result.Count() == 0)
+                return false;
+            return true;
+        }
+
         public static bool UserExists(string _phonenumber)
         {
             Cluster cluster = Cluster.Builder().AddContactPoint(Constants.DatabaseAddress).Build();
@@ -89,8 +110,8 @@ namespace RubyDub.DAL
             if (!UserExists(_user.phoneunumber))
             {
                 _user.lastcode = StringGenerator.GenerateRandomString(6, false, true);
-                _user.date = DateTime.Now;
-                string req = "INSERT INTO Customer (username,phonenumber,email,password,tokenpass,lastcode,enddate) Values(";
+                _user.date = DateTime.Now.Ticks;
+                string req = "INSERT INTO Customer (username,phonenumber,email,password,tokenpass,lastcode,enddate,score) Values(";
                 req += _user.ToString() + ')';
                 SMSManagement.SendVerificationCode(_user);
                 Cluster cluster = Cluster.Builder().AddContactPoint(Constants.DatabaseAddress).Build();
@@ -100,7 +121,7 @@ namespace RubyDub.DAL
             else
             {
                 _user.lastcode = StringGenerator.GenerateRandomString(6, false, true);
-                _user.date = DateTime.Now;
+                _user.date = DateTime.Now.Ticks;
                 string req = "UPDATE Customer SET lastcode=\'" + StringGenerator.GenerateRandomString(6, false, true) + "\' date=" + DateTime.Now + "WHERE phonenumber=\'" + _user.phoneunumber + "\'";
                 req += _user.ToString() + ')';
                 SMSManagement.SendVerificationCode(_user);

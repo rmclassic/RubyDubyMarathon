@@ -14,6 +14,7 @@ namespace RubyDub
     {
         public static void Main(string[] args)
         {
+
             CreateWebHostBuilder(args).Build().Run();
         }
 

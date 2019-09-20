@@ -34,5 +34,6 @@ namespace RubyDub.DAL
             var session = cluster.Connect(Constants.DatabaseKeySpace);
             var result = session.Execute(req);
         }
+
     }
 }

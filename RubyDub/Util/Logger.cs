@@ -14,8 +14,8 @@ namespace RubyDub.Util
             var baseservice = ServicesDAL.GetService(_service.id);
             var getservice = GetServicesDAL.GetService(_service.id);
 
-            string logstr = DateTime.Now.ToShortDateString() + '\t' + getservice.phoneunumber + '\t' + baseservice.name + '\t' + baseservice.price + '\t' + getservice.price + '\t' + getservice.starttime + '\t' + getservice.endtime + '\n';
-            File.AppendAllText("C:\\", logstr);
+            string logstr = DateTime.Now.ToShortDateString() + '\t' + getservice.phoneunumber + '\t' + baseservice.name + '\t' + baseservice.price + '\t' + getservice.price + '\t' + new DateTime(getservice.starttime).ToString() + '\t' + new DateTime(getservice.endtime).ToString() + "\n";
+            File.AppendAllText("I:\\test.txt", logstr);
         }
     }
 }

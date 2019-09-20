@@ -7,8 +7,8 @@ namespace RubyDub.Models
     {
         public string idservice;
         public string phoneunumber;
-        public long starttime;
-        public long endtime;
+        public long starttime = 0;
+        public long endtime = 0;
         public string barcode;
 
         public GetService()
@@ -20,8 +20,8 @@ namespace RubyDub.Models
             idservice = _row["idservice"] as string;
             phoneunumber = _row["phonenumber"] as string;
             id = _row["id"] as string;
-            starttime = DateTime.Parse(_row["starttime"] as string).Ticks;
-            endtime = DateTime.Parse(_row["endtime"] as string).Ticks;
+            starttime = DateTime.Parse(_row["starttime"].ToString()).Millisecond;
+            endtime = DateTime.Parse(_row["endtime"].ToString()).Millisecond;
             barcode = _row["barcode"] as string;
             col = _row["col"] as string;
         }

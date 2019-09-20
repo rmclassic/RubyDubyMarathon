@@ -3,20 +3,24 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using RubyDub.Models;
 using RubyDub.DAL;
+
 namespace RubyDub.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class DeleteCustomerServiceController : Controller
+    public class GetAllAccountsController : Controller
     {
-        [HttpDelete]
-        public IActionResult Delete(string id, string token, string phonenumber)
+        [HttpGet]
+        public IActionResult Get(string phonenumber, string token)
         {
             if (!UserAuthDAL.VerifyToken(phonenumber, token))
                 return Unauthorized();
-            CustomerServicesDAL.DeleteService(id);
-            return Ok();
+            var transactions = AccountsDAL.GetAccounts(phonenumber);
+            return Ok(transactions);
         }
+
+
     }
 }

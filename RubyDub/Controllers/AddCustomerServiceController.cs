@@ -13,12 +13,14 @@ namespace RubyDub.Controllers
     public class AddCustomerServiceController : Controller
     {
         [HttpPost]
-        public IActionResult Post([FromBody]CustomerService customerService)
+        public IActionResult Post([FromBody]CustomerService customerService,[FromForm]string token)
         {
             if (customerService != null)
             {
-                RubyDub.Util.Logger.LogCustomerService(customerService);
+                if (!UserAuthDAL.VerifyToken(customerService.phoneunumber, token))
+                    return Unauthorized();
                 CustomerServicesDAL.AddService(customerService);
+                RubyDub.Util.Logger.LogCustomerService(customerService);
                 return Ok();
             }
             else return BadRequest();

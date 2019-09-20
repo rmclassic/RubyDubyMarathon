@@ -16,19 +16,16 @@ namespace RubyDub.Controllers
     public class loginController : ControllerBase
     {
         [HttpPost]
-        public ActionResult Post([FromForm]string PhoneNumber, [FromForm]string Password)
+        public ActionResult Post([FromForm]string phonenumber, [FromForm]string password)
         {
-            UserAuthDAL.Test();
-            if (PhoneNumber == Password)
+            if (UserAuthDAL.Login(phonenumber, password))
             {
-                string authtoken = StringGenerator.GenerateRandomString(50);
-                //check for token collisions
-                //Insert Token in database
-                return Ok(new AuthenticationResponse(authtoken));
-
+                string token = UserAuthDAL.CreateToken(phonenumber);
+                return Ok(token);
             }
-            else
-                return Unauthorized();
+
+            return Unauthorized();
+
             
         }
     }
