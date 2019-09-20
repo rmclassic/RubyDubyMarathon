@@ -51,7 +51,7 @@ namespace RubyDub.DAL
             Cluster cluster = Cluster.Builder().AddContactPoint(Constants.DatabaseAddress).Build();
             var session = cluster.Connect(Constants.DatabaseKeySpace);
             var result = session.Execute("select * from Customer where phonenumber =\'" + phonenumber + "\' AND token = \'" + token + "\'");
-            if (result.Count() == 0)
+            if (result.Count() > 0 && result.ElementAt(0) != null)
                 return false;
             return true;
         }
