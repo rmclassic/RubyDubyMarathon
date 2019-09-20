@@ -17,7 +17,9 @@ namespace RubyDub.DAL
             var session = cluster.Connect(Constants.DatabaseKeySpace);
 
 
-           var res = session.Execute("SELECT * FROM Customer");
+           var res = session.Execute("TRUNCATE GetService");
+             res = session.Execute("TRUNCATE Service");
+             session.Execute("TRUNCATE CustomerService");
         }
 
         public static bool IsPhoneNumberAvailable(string _phonenumber)
@@ -54,7 +56,7 @@ namespace RubyDub.DAL
         public static void SignUserUp(User _user)
         {
             string req = "INSERT INTO Customer (username,phonenumber,email,password,tokenpass,lastcode,enddate) Values(";
-            _user.SetUserToken();
+            _user.tokenpass = UserAuthDAL.CreateToken(_user.phoneunumber);
             req += _user.ToString() + ')';
             Cluster cluster = Cluster.Builder().AddContactPoint(Constants.DatabaseAddress).Build();
             var session = cluster.Connect(Constants.DatabaseKeySpace);
@@ -84,12 +86,13 @@ namespace RubyDub.DAL
 
         public static void SendUserVerificationCode(User _user)
         {
-            if (!UserExists(_user.phonunumber))
+            if (!UserExists(_user.phoneunumber))
             {
                 _user.lastcode = StringGenerator.GenerateRandomString(6, false, true);
                 _user.date = DateTime.Now;
                 string req = "INSERT INTO Customer (username,phonenumber,email,password,tokenpass,lastcode,enddate) Values(";
                 req += _user.ToString() + ')';
+                SMSManagement.SendVerificationCode(_user);
                 Cluster cluster = Cluster.Builder().AddContactPoint(Constants.DatabaseAddress).Build();
                 var session = cluster.Connect(Constants.DatabaseKeySpace);
                 session.Execute(req);
@@ -98,8 +101,9 @@ namespace RubyDub.DAL
             {
                 _user.lastcode = StringGenerator.GenerateRandomString(6, false, true);
                 _user.date = DateTime.Now;
-                string req = "UPDATE Customer SET lastcode=\'" + StringGenerator.GenerateRandomString(6, false, true) + "\' date=" + DateTime.Now + "WHERE phonenumber=\'" + _user.phonunumber + "\'";
+                string req = "UPDATE Customer SET lastcode=\'" + StringGenerator.GenerateRandomString(6, false, true) + "\' date=" + DateTime.Now + "WHERE phonenumber=\'" + _user.phoneunumber + "\'";
                 req += _user.ToString() + ')';
+                SMSManagement.SendVerificationCode(_user);
                 Cluster cluster = Cluster.Builder().AddContactPoint(Constants.DatabaseAddress).Build();
                 var session = cluster.Connect(Constants.DatabaseKeySpace);
                 session.Execute(req);

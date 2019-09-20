@@ -17,7 +17,7 @@ namespace RubyDub.Controllers
         [HttpPost]
         public StatusCodeResult Post([FromForm]string username, [FromForm]string phonenumber, [FromForm]string email, [FromForm]string password)
         {
-            UserAuthDAL.Test();
+           
             var user = new User(username, phonenumber, email, password, "", "", "");
             
             if (!UserAuthDAL.IsPhoneNumberAvailable(phonenumber))

@@ -8,7 +8,7 @@ namespace RubyDub.Models
     public class User
     {
         public string username;
-        public string phonunumber;
+        public string phoneunumber;
         public string email;
         public string password;
         public string tokenpass;
@@ -18,7 +18,7 @@ namespace RubyDub.Models
         public User(Row _row)
         {
             username = _row["username"] as string;
-            phonunumber = _row["phonenumber"] as string;
+            phoneunumber = _row["phonenumber"] as string;
             email = _row["email"] as string;
             password = _row["password"] as string;
             tokenpass = _row["tokenpass"] as string;
@@ -29,7 +29,7 @@ namespace RubyDub.Models
         public User(string _username, string _phonenumber, string _email, string _password, string _tokenpass, string _lastcode, string _date)
         {
             username = _username;
-            phonunumber = _phonenumber;
+            phoneunumber = _phonenumber;
             email = _email;
             password = _password;
             tokenpass = _tokenpass;
@@ -39,12 +39,7 @@ namespace RubyDub.Models
         }
         public override string ToString()
         {
-            return "\'" + username + "\',\'" + phonunumber + "\',\'" + email + "\',\'" + password + "\',\'" + tokenpass + "\',\'" + lastcode + "\',\'" + date.Millisecond + "\'";
-        }
-
-        public void SetUserToken()
-        {
-           tokenpass = Util.StringGenerator.GenerateRandomString(50);
+            return "\'" + username + "\',\'" + phoneunumber + "\',\'" + email + "\',\'" + password + "\',\'" + tokenpass + "\',\'" + lastcode + "\',\'" + date.Millisecond + "\'";
         }
     }
 }
