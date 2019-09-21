@@ -10,23 +10,11 @@ using RubyDub.Util;
 namespace RubyDub.DAL
 {
     public static class UserAuthDAL
-    {
-        public static void Test()
-        {
-            Cluster cluster = Cluster.Builder().AddContactPoint(Constants.DatabaseAddress).Build();
-            var session = cluster.Connect(Constants.DatabaseKeySpace);
-
-
-           var res = session.Execute("TRUNCATE GetService");
-             res = session.Execute("TRUNCATE Service");
-             session.Execute("TRUNCATE CustomerService");
-        }
-
+    { 
         public static bool IsPhoneNumberAvailable(string _phonenumber)
         {
-            Cluster cluster = Cluster.Builder().AddContactPoint(Constants.DatabaseAddress).Build();
-            var session = cluster.Connect(Constants.DatabaseKeySpace);
-            var result = session.Execute("select * from Customer where phonenumber =\'" + _phonenumber + "\'");
+            string req = "select * from Customer where phonenumber =\'" + _phonenumber + "\'";
+            var result = DataConnection.SendQuery(req);
             foreach (Row item in result)
             {
                 if (item["tokenpass"] != null)
@@ -37,10 +25,9 @@ namespace RubyDub.DAL
 
         public static bool Login(string phonenumber, string password)
         {
-            Cluster cluster = Cluster.Builder().AddContactPoint(Constants.DatabaseAddress).Build();
-            var session = cluster.Connect(Constants.DatabaseKeySpace);
-            var result = session.Execute("select * from Customer where phonenumber =\'" + phonenumber + "\' AND password = \'" + password + '\'');
+            string req = "select * from Customer where phonenumber =\'" + phonenumber + "\' AND password = \'" + password + '\'';
 
+            var result = DataConnection.SendQuery(req);
             if (result.Count() > 0)
                 return true;
             return false;
@@ -48,9 +35,8 @@ namespace RubyDub.DAL
 
         public static bool VerifyToken(string phonenumber, string token)
         {
-            Cluster cluster = Cluster.Builder().AddContactPoint(Constants.DatabaseAddress).Build();
-            var session = cluster.Connect(Constants.DatabaseKeySpace);
-            var result = session.Execute("select * from Customer where phonenumber =\'" + phonenumber + "\' AND token = \'" + token + "\'");
+            string req = "select * from Customer where phonenumber =\'" + phonenumber + "\' AND token = \'" + token + "\'";
+            var result = DataConnection.SendQuery(req);
             if (result.Count() > 0 && result.ElementAt(0) != null)
                 return false;
             return true;
@@ -58,9 +44,8 @@ namespace RubyDub.DAL
 
         public static bool UserExists(string _phonenumber)
         {
-            Cluster cluster = Cluster.Builder().AddContactPoint(Constants.DatabaseAddress).Build();
-            var session = cluster.Connect(Constants.DatabaseKeySpace);
-            var result = session.Execute("select * from Customer where phonenumber =\'" + _phonenumber + "\'");
+            string req = "select * from Customer where phonenumber =\'" + _phonenumber + "\'";
+            var result = DataConnection.SendQuery(req);
             return (result.Count() != 0);
         }
 
@@ -68,10 +53,10 @@ namespace RubyDub.DAL
         public static bool IsUserVerified(string _phonenumber)
         {
             string req = "SELECT * FROM Customer WHERE phonenumber=\'" + _phonenumber + "\'";
-            Cluster cluster = Cluster.Builder().AddContactPoint(Constants.DatabaseAddress).Build();
-            var session = cluster.Connect(Constants.DatabaseKeySpace);
-            var result = session.Execute(req);
-            return (result.First()["token"] != null);
+            var result = DataConnection.SendQuery(req);
+            if (result.Count() > 0)
+                return (result.First()["token"] != null);
+            return false;
     }
 
         public static void SignUserUp(User _user)
@@ -79,27 +64,22 @@ namespace RubyDub.DAL
             string req = "INSERT INTO Customer (username,phonenumber,email,password,tokenpass,lastcode,enddate) Values(";
             _user.tokenpass = UserAuthDAL.CreateToken(_user.phoneunumber);
             req += _user.ToString() + ')';
-            Cluster cluster = Cluster.Builder().AddContactPoint(Constants.DatabaseAddress).Build();
-            var session = cluster.Connect(Constants.DatabaseKeySpace);
-            var result = session.Execute(req);
+            DataConnection.SendQuery(req);
         }
 
         public static string CreateToken(string phonenumber)
         {
             string token = StringGenerator.GenerateRandomString(50);
             string req = "UPDATE Customer SET tokenpass=\'" + token + "\' WHERE phonenumber=\'" + phonenumber + "\'";
-            Cluster cluster = Cluster.Builder().AddContactPoint(Constants.DatabaseAddress).Build();
-            var session = cluster.Connect(Constants.DatabaseKeySpace);
-            var result = session.Execute(req);
+            DataConnection.SendQuery(req);
             return token;
         }
 
         public static bool VerifyUser(string code, string phonenumber)
         {
             string req = "SELECT * FROM Customer WHERE phonenumber=\'" + phonenumber + "\' AND lastcode=\'" + code + "\' ALLOW FILTERING";
-            Cluster cluster = Cluster.Builder().AddContactPoint(Constants.DatabaseAddress).Build();
-            var session = cluster.Connect(Constants.DatabaseKeySpace);
-            var result = session.Execute(req);
+            var result = DataConnection.SendQuery(req);
+
             if (result.Count() == 0)
                 return false;
             return true;
@@ -114,9 +94,7 @@ namespace RubyDub.DAL
                 string req = "INSERT INTO Customer (username,phonenumber,email,password,tokenpass,lastcode,enddate,score) Values(";
                 req += _user.ToString() + ')';
                 SMSManagement.SendVerificationCode(_user);
-                Cluster cluster = Cluster.Builder().AddContactPoint(Constants.DatabaseAddress).Build();
-                var session = cluster.Connect(Constants.DatabaseKeySpace);
-                session.Execute(req);
+                DataConnection.SendQuery(req);
             }
             else
             {
@@ -125,9 +103,7 @@ namespace RubyDub.DAL
                 string req = "UPDATE Customer SET lastcode=\'" + StringGenerator.GenerateRandomString(6, false, true) + "\' date=" + DateTime.Now + "WHERE phonenumber=\'" + _user.phoneunumber + "\'";
                 req += _user.ToString() + ')';
                 SMSManagement.SendVerificationCode(_user);
-                Cluster cluster = Cluster.Builder().AddContactPoint(Constants.DatabaseAddress).Build();
-                var session = cluster.Connect(Constants.DatabaseKeySpace);
-                session.Execute(req);
+                DataConnection.SendQuery(req);
             }
         }
     }

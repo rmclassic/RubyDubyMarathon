@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Cassandra;
 using RubyDub.Models;
+using RubyDub.Util;
 namespace RubyDub.DAL
 {
     public static class ServicesDAL
@@ -11,28 +12,23 @@ namespace RubyDub.DAL
         public static Service GetService(string _id)
         {
             string req = "SELECT * FROM Service WHERE id=\'" + _id + "\'";
-            Cluster cluster = Cluster.Builder().AddContactPoint(Constants.DatabaseAddress).Build();
-            var session = cluster.Connect(Constants.DatabaseKeySpace);
-            var result = session.Execute(req);
+            var result = DataConnection.SendQuery(req);
 
+            if (result.Count() > 0)
                 return new Service(result.First());
-        
+            else return null;
         }
 
         public static void AddService(Service _service)
         {
             string req = "INSERT INTO Service (name, id, price, period, pricepp, col) Values(" + _service.ToString() + ")";
-            Cluster cluster = Cluster.Builder().AddContactPoint(Constants.DatabaseAddress).Build();
-            var session = cluster.Connect(Constants.DatabaseKeySpace);
-            var result = session.Execute(req);
+            DataConnection.SendQuery(req);
         }
 
         public static void DeleteService(string _id)
         {
             string req = "SELECT * FROM Service WHERE id=\'" + _id + "\'";
-            Cluster cluster = Cluster.Builder().AddContactPoint(Constants.DatabaseAddress).Build();
-            var session = cluster.Connect(Constants.DatabaseKeySpace);
-            var result = session.Execute(req);
+            DataConnection.SendQuery(req);
         }
     }
 }

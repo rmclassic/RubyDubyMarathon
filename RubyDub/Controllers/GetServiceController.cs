@@ -13,7 +13,6 @@ namespace RubyDub.Controllers
         [HttpGet]
         public object Get(string id)
         {
-            UserAuthDAL.Test();
            var result = ServicesDAL.GetService(id);
             if (result == null)
                 return NotFound();
